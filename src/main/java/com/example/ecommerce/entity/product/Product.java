@@ -1,12 +1,13 @@
 package com.example.ecommerce.entity.product;
-
 import com.example.ecommerce.entity.base.BaseEntity;
+import com.example.ecommerce.entity.order.CartItem;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -32,5 +33,7 @@ public class Product extends BaseEntity {
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
     private Inventory inventory;
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<CartItem> cartItem;
 
 }

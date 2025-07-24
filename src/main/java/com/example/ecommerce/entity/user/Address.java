@@ -1,5 +1,6 @@
 package com.example.ecommerce.entity.user;
 
+import com.example.ecommerce.entity.order.Shipment;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +24,9 @@ public class Address {
 
     @Enumerated(EnumType.STRING)
     private AddressType addressType;
+
+    @OneToOne(mappedBy = "address", cascade = CascadeType.ALL)
+    private Shipment shipment;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
