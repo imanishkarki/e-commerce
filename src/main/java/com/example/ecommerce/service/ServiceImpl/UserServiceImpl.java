@@ -5,39 +5,63 @@ import com.example.ecommerce.payload.LoginDTO;
 import com.example.ecommerce.payload.SignupDTO;
 import com.example.ecommerce.repository.UserRepository;
 import com.example.ecommerce.service.UserService;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManger;
+    private final JwtService jwtService;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManger, JwtService jwtService) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManger = authenticationManger;
+        this.jwtService = jwtService;
     }
 
     @Override
     public String signUp(SignupDTO signupDTO) {
-        User user = new User();
-        user.setName(signupDTO.getName());
-        user.setPassword(signupDTO.getPassword());
-        user.setPhoneNumber(signupDTO.getPhoneNumber());
-        user.setRole(signupDTO.getRole());
+        if (userRepository.findByPhoneNumber(signupDTO.getPhoneNumber()).isPresent()){
+            return "user already exists!";
+        }
+        User user =  User.builder()
+                .phoneNumber(signupDTO.getPhoneNumber())
+                .name(signupDTO.getName())
+                .password(passwordEncoder.encode(signupDTO.getPassword()))
+                .role(signupDTO.getRole())
+             //   .address(signupDTO.getAddress())
+                .build();
 
-        // Set up address relationships
+        // Link user to each address
         if (signupDTO.getAddress() != null) {
             for (Address address : signupDTO.getAddress()) {
-                address.setUser(user); // set the reverse relation
+                address.setUser(user); //
             }
-            user.setAddress(signupDTO.getAddress());
+            user.setAddress(signupDTO.getAddress()); // If User has `List<Address>` in it
         }
 
         userRepository.save(user);
-        return "User signup successful!";
+        return "User created successfully";
     }
 
     @Override
     public String verify(LoginDTO loginDTO) {
-        return "login successful!";
+
+        Authentication authenticate =
+                authenticationManger.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getPhoneNumber(), loginDTO.getPassword()));
+        if ( authenticate.isAuthenticated()){
+             jwtService.generateToken(loginDTO.getPhoneNumber());
+            return "login successful!";
+        }else {
+            return "login failed!";
+        }
+
     }
 }
