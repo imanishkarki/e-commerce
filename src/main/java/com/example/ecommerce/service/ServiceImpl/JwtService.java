@@ -1,11 +1,9 @@
 package com.example.ecommerce.service.ServiceImpl;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
-
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,7 +13,7 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY = "khgjdhgkjdfhgjhsdfkghndgg5564g65f44g554f65gh54dfg654df5g";
+    private static final String SECRET_KEY = "xJt9Q+fK8Zps8MvnzzhYMg5TYzH3D6VfNwqB9YCBgXY=";
 
     private SecretKey getSigningKey(){
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);

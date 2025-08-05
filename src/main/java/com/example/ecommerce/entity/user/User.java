@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.List;
+import java.util.Set;
 
 
 @Entity
@@ -24,10 +25,14 @@ public class User {
     private String password;
 
 //    @ManyToMany
-//    @JoinTable(name = "user_roles",joinColumns = @JoinColumn(name = "user_id"),inverseJoinColumns = @JoinColumn(name = "role_id"))
+//    @JoinTable(name = "user_roles",
+//            joinColumns = @JoinColumn(name = "user_id"),
+//            inverseJoinColumns = @JoinColumn(name = "role_id"))
 //    private Set<Role> roles;
+
+    @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
-    private Roles role;
+    private Set<Roles> role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Address> address;
